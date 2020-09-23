@@ -1,0 +1,2 @@
+object ::= "{" [$String$ ":" $Value$ {"," $String$ ":" $Value$}] "}";
+level="context".

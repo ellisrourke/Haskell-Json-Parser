@@ -1,0 +1,2 @@
+number ::= ["-"] ("0" | {$digit$}) ["." {$digit$}] [("e" | "E") ["+" | "-"] {$digit$}];
+level="lexical".

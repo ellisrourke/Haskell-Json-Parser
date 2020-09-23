@@ -1,0 +1,2 @@
+value ::= string | number | object | array | "true" | "false";
+level="context".
