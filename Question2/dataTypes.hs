@@ -1,6 +1,14 @@
-type object = (String,[value])
+{--
+    - JSON Data Types
+    - Ellis Rourke
+--}
 
-data value =  String
-			| Integer
-			| Double
-			| object
+data Value =  
+      String
+      | Integer
+      | Double
+      | Object
+    deriving Show
+      
+type Object = [(String,[Value])]
+
