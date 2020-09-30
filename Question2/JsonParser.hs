@@ -15,6 +15,8 @@ import ABR.Parser.Lexers
 
 data Value = Str String
            | Num Double
+           | Arr [Value]
+           | Obj Object
           deriving (Show)
 
 
@@ -28,7 +30,10 @@ makeObject i v = (Object i v)
 
 symbolL :: Lexer
 symbolL = literalL '(' <|> literalL ')' <|> literalL '+' <|>
-          literalL '-' <|> literalL '*' <|> literalL '/'
+          literalL '-' <|> literalL '*' <|> literalL '/' <|>
+          literalL '{' <|> literalL ':' <|> literalL '}' <|>
+          literalL ','
+
 
 -- string Lexer
 myStringL :: Lexer
@@ -51,27 +56,41 @@ myFloatL =
         ))
    %> "float"
 
+
+-- Array Parser
+arrayL = 
+   literalL '['
+   <&&> soft (optional (
+      (many (satisfyL (/= ']') "") &%> ""))
+      )
+   <&&> literalL ']'
+   %> "array"
+
+
 --Object parser
--- objectP :: Parser Object
+--objectP :: Parser Object
 objectP = 
-      literalP "'{'" "{"
-  <&> tagP "string"
+     literalP "'{'" "{"
+  &> tagP "string"
   <&> literalP "':'" ":"
-  <&> valueP
-  <&> literalP "'}'" "}"
-  @> #### TODO ####
+  &> valueP
+  <& literalP "'}'" "}"
+  @> (\((_,tag,_),value) -> makeObject tag value)
 
 -- Value parser
-valueP :: Parser Value
+-- valueP :: Parser Value
 valueP = 
       tagP "float"
       @> (\(_,n,_) -> Num (read n))
   <|> tagP "string"
       @> (\(_,n,_) -> Str (read n))
+  <|> tagP "array"
+      @> (\(_,n,_) -> Str (read n))
+
 
 objectL:: Lexer
 objectL = dropWhite $ nofail $ total $ listL 
-   [whitespaceL,symbolL, myFloatL,myStringL]
+   [whitespaceL,symbolL, myFloatL,myStringL,arrayL]
 
 
 

@@ -1,7 +1,6 @@
 \documentclass[a4paper]{article}
-
 \usepackage{graphicx}
-
+\usepackage{listings}
 
 \begin{document}
 
@@ -12,16 +11,11 @@
 \maketitle
 
 \begin{abstract}
-   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-   tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-   veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-   commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-   velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-   cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-   est laborum.
+   Lorem ipsum
 \end{abstract}
 
 \section{Question 1}
+
 
 This template report shows how to include Haskell and EBNF code into a document
 and how to include the generated syntax diagrams. 
@@ -30,51 +24,84 @@ and how to include the generated syntax diagrams.
 
 \subsection{Intro stuff 1}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-est laborum.
+Lorem ipsum 
 
 \subsubsection{Intro stuff 2}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-est laborum.
+Lorem ipsum 
 
-\section{Syntax}
 
-Some included EBNF and syntax diagrams:
 
-\EBNFInput{../question1/object.ebnf}
-
+\subsection{Number Syntax}
 {\centering
-
-   \includegraphics[scale=0.9]{syntax/identifier}
-
+	\includegraphics[scale=0.9]{Question1/number.eps}
 }
+\begin{lstlisting}[frame=single]
+number ::= ["-"] ("0" | {$digit$}) ["." {$digit$}] 
+[("e" | "E") ["+" | "-"] {$digit$}];
+level="lexical".
 
-\EBNFInput{syntax/printStatement.ebnf}
+\end{lstlisting}
 
+\subsection{String Syntax}
 {\centering
-
-   \includegraphics[scale=0.9]{syntax/printStatement}
-
+	\includegraphics[scale=0.9]{Question1/string.eps}
 }
+\begin{lstlisting}[frame=single]
+string ::= "\"" {char} "\"";
+level="lexical".
+\end{lstlisting}
 
-\section{Code}
 
-Input code (plain style).
+\subsection{Value Syntax}
+{\centering
+	\includegraphics[scale=0.9]{Question1/value.eps}
+}
+\begin{lstlisting}[frame=single]
+value ::= string | number | object | array 
+| "true" | "false";
+level="context".
+\end{lstlisting}
 
+\subsection{Array Syntax}
+{\centering
+	\includegraphics[scale=0.9]{Question1/array.eps}
+}
+\begin{lstlisting}[frame=single]
+array ::= "[" [$value$ {"," $value$}] "]";
+level="context".
+\end{lstlisting}
 
+\subsection{Object Syntax}
+{\centering
+	\includegraphics[scale=0.9]{Question1/object.eps}
+}
+\begin{lstlisting}[frame=single]
+object ::= "{" [$String$ ":" $Value$ 
+{"," $String$ ":" $Value$}] "}";
+level="context".
+\end{lstlisting}
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\section{Question 2}
+\subsection{Definition of Data Types}
+\begin{lstlisting}[frame=single]
+data Value = Str String
+| Num Double
+deriving (Show)
 
-\noindent Input code (lterate style).
+data Object = Object 
+{ identifier :: String
+, value :: Value
+} deriving (Show)
+
+makeObject :: String -> Value-> Object
+makeObject i v = (Object i v)
+\end{lstlisting}
 
 
 \end{document}
