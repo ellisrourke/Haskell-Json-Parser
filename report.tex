@@ -11,26 +11,14 @@
 \maketitle
 
 \begin{abstract}
-   Lorem ipsum
+   In this report i will doucment my JSON Parser developed in Haskell
 \end{abstract}
 
 \section{Question 1}
 
-
-This template report shows how to include Haskell and EBNF code into a document
-and how to include the generated syntax diagrams. 
-
-
-
-\subsection{Intro stuff 1}
-
-Lorem ipsum 
-
-\subsubsection{Intro stuff 2}
-
-Lorem ipsum 
-
-
+This section will detail the syntax of both the lexical and context free grammar
+used to define JSON data to be parsed from an input file.
+EBNF diagrams have been produced to visualise the grammar using Syntrax
 
 \subsection{Number Syntax}
 {\centering
@@ -89,6 +77,8 @@ level="context".
 \bigskip
 \section{Question 2}
 \subsection{Definition of Data Types}
+Below is the definintion of my object data type that will be used to store ovjects parsed from JSON data
+
 \begin{lstlisting}[frame=single]
 data Value = Str String
 | Num Double

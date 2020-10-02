@@ -13,20 +13,24 @@ import ABR.Util.Pos
 import ABR.Parser
 import ABR.Parser.Lexers
 
+
 data Value = Str String
            | Num Double
-           | Arr [Value]
+           | Arr [Integer]
            | Obj Object
           deriving (Show)
 
 
-data Object = Object 
-   { identifier :: String
-   , value :: Value
-   } deriving (Show)
+
+data Object = Object {identifier :: String , value :: Value}
+            | StringObject { str :: String }
+            deriving (Show)
 
 makeObject :: String -> Value-> Object
 makeObject i v = (Object i v)
+
+makeString :: String -> Object
+makeString v = StringObject v
 
 symbolL :: Lexer
 symbolL = literalL '(' <|> literalL ')' <|> literalL '+' <|>
@@ -77,16 +81,21 @@ objectP =
   <& literalP "'}'" "}"
   @> (\((_,tag,_),value) -> makeObject tag value)
 
+
 -- Value parser
--- valueP :: Parser Value
+-- valueP :: Parser Value @> (\(_,n,_) -> Num (read n))
 valueP = 
       tagP "float"
       @> (\(_,n,_) -> Num (read n))
   <|> tagP "string"
-      @> (\(_,n,_) -> Str (read n))
+      @> (\(_,n,_) -> makeString Str (read n))
   <|> tagP "array"
-      @> (\(_,n,_) -> Str (read n))
+      @> (\(_,n,_) -> Arr (read n))
 
+
+stringP =
+      tagP "string"
+      @> (\(_,n,_) -> Str (read n))
 
 objectL:: Lexer
 objectL = dropWhite $ nofail $ total $ listL 
@@ -123,6 +132,11 @@ readInputFile path = do
             OK (obj,_) -> do
                putStrLn "-------- Object(s) --------"
                print obj
+               case stringP tlps of
+                  Error pos msg -> putStr $ errMsg pos msg source
+                  OK (s,_) -> do
+                     putStrLn "-------- string(s) --------"
+                     print s
 
 
 
