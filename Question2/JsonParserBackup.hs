@@ -27,13 +27,13 @@ data Object = Object {identifier :: String , value :: Value}
 --}
 
 data Property = Property {identifier:: String, value :: Value}
-   deriving(Show)
+data Object = Object[Property]
 
-data Object = Object [Property]
-   deriving(Show)
+makeObject :: String -> Value-> Object
+makeObject i v = (Object i v)
 
-makeProperty :: String -> Value-> Property
-makeProperty i v = (Property i v)
+makeStringObject :: String -> Object
+makeStringObject v = makeObject ("String") (Str v)
 
 
 symbolL :: Lexer
@@ -91,27 +91,15 @@ arrayL =
    <&&> literalL ']'
    %> "array"
 
-{--Property parser
---propertyP :: Parser Object
-propertyP =
+--Object parser
+--objectP :: Parser Object
+objectP =
      literalP "'{'" "{"
   &> tagP "string"
   <&> literalP "':'" ":"
   &> valueP
   <& literalP "'}'" "}"
-  %> "property"
-  --@> (\((_,tag,_),value) -> makeProperty tag value)
---}
-
---propertyP :: Parser Object
-propertyP =
-  tagP "string"
-  <&> literalP "':'" ":"
-  &> valueP
-  @> (\((_,tag,_),value) -> makeProperty tag value)
-
-  {--%> "property"--}
-
+  @> (\((_,tag,_),value) -> makeObject tag value)
 
 
 
@@ -124,26 +112,17 @@ valueP =
       @> (\(_,n,_) -> Str (read n))
   <|> tagP "array"
       @> (\(_,n,_) -> Arr (read n))
+  <|> tagP "object"
+      @> (\(_,n,_) -> Str (read n))
 
+stringP =
+      tagP "string"
+      @> (\(_,n,_) -> Str (read n))
 
-propertyL:: Lexer
-propertyL = dropWhite $ nofail $ total $ listL
-   [whitespaceL,symbolL,myFloatL,myStringL,arrayL]
+objectL:: Lexer
+objectL = dropWhite $ nofail $ total $ listL
+   [whitespaceL,objectLex,symbolL,myFloatL,myStringL,arrayL]
 
-{--objectP :: Parser property
-objectP =
-         literalP "'{'"
-      &> (many propertyP)
-      <& literalP "'}'"
-      @> (\(property)) -> []
---}
-
---objectP :: Parser Program
-objectP =
-   literalP "'{'" "{"
-   &> (many propertyP)
-   <& literalP "'}'" "}"
-   @> (\(properties) -> [Object properties])
 
 
 main :: IO()
@@ -165,16 +144,16 @@ readInputFile path = do
    let cps = preLex source
    putStrLn "----------- cps -----------"
    print cps
-   case propertyL cps of
+   case objectL cps of
       Error pos msg -> putStr $ errMsg pos msg source
       OK(tlps,_) -> do
          putStrLn "--------- Lexemes ---------"
          print tlps
          case objectP tlps of
             Error pos msg -> putStr $ errMsg pos msg source
-            OK (property,_) -> do
+            OK (obj,_) -> do
                putStrLn "-------- Object(s) --------"
-               print property
+               print obj
 
 
 
